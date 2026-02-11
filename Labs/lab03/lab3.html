@@ -1,0 +1,233 @@
+<!-- Created by Bracy 0.4 on Monday, February 9, 2026 at 1:56 PM CST -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Computer Laboratory 3
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 3</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming Principles</b>
+   <br />
+   <b>Tuesday, February 10, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   In this laboratory assignment, you will write an OCaml function that deletes
+   a node from a binary search tree (<small>BST</small>).
+   B<small>ST</small>&rsquo;s are commonly discussed in a data structures
+   course (a prerequisite for CS<small>CI</small> 2041), so it is assumed
+   that you are familiar with the <small>BST</small> deletion algorithm.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   We&rsquo;ll begin by briefly reviewing <small>BST</small>&rsquo;s. A
+   <small>BST</small> is a binary tree with zero or more
+   <i>nodes.</i> A <small>BST</small> with zero nodes is said to be
+   <i>empty.</i> Each node in a non-empty <small>BST</small> has a
+   <i>key,</i> a <i>left subtree,</i> and a <i>right
+   subtree.</i> The keys are totally ordered, so that if
+   <i>k</i>&#8321; and <i>k</i>&#8322; are keys, then either
+   <i>k</i>&#8321;&nbsp;&lt;&nbsp;<i>k</i>&#8322;, or
+   <i>k</i>&#8321;&nbsp;&gt;&nbsp;<i>k</i>&#8322;, or
+   <i>k</i>&#8321;&nbsp;=&nbsp;<i>k</i>&#8322;. The left subtree and
+   right subtree are other <small>BST</small>&rsquo;s, which may be empty
+   or non-empty.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose that <i>k</i> is the key at
+   the root of a <small>BST</small>. Then all nodes in the root&rsquo;s
+   left subtree have keys less than <i>k,</i> and all nodes in the
+   root&rsquo;s right subtree have keys greater than <i>k.</i> This is the
+   <small><i>BST</i></small> <i>property.</i> As a result of the
+   <small>BST</small> property, a key cannot appear in a
+   <small>BST</small> more than once.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For example, the following diagram shows a
+   tree that satisfies the <small>BST</small> property. Its keys are
+   integers. Empty subtrees are shown with slashed boxes, and non-empty
+   subtrees are shown with arrows.
+  </p>
+  <p align="center">
+   <img border="0" src="bst.png">
+  </p>
+  <p align="justify">
+   The <small>BST</small> property lets us efficiently search a
+   <small>BST</small> for a key, and it lets us efficiently add a new node
+   (with a new key) to a <small>BST</small>. It also lets us efficiently
+   delete a node from a <small>BST</small>, given its key. In this
+   laboratory, you must write an OCaml function that efficiently deletes a node
+   from a <small>BST</small> in a way that preserves the
+   <small>BST</small> property.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   You must first define an OCaml type
+   <tt>'key</tt>&nbsp;<tt>bst</tt> that describes a binary
+   search tree whose keys have the type <tt>'key</tt>. Here&rsquo;s
+   how to do that:
+  </p>
+  <blockquote>
+   <p>
+    <tt>type 'key bst = BstEmpty | BstNode of 'key &#8727; 'key bst &#8727;
+    'key bst ;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The type <tt>'key</tt> may be any OCaml type; all keys in a
+   <small>BST</small> have the same type. The constructor
+   <tt>BstEmpty</tt> returns an empty <small>BST</small>. The
+   constructor
+   <tt>BstNode(</tt><i>k</i><tt>,</tt>&nbsp;<i>l</i><tt>,</tt>&nbsp;<i>r</i><tt>)</tt>
+   returns a non-empty <small>BST</small> with a node at its root. Here
+   <i>k</i> is the root&rsquo;s key, of type <tt>'key</tt>;
+   <i>l</i> is the root&rsquo;s left subtree, of type
+   <tt>'key</tt>&nbsp;<tt>bst</tt>; and <i>r</i> is the
+   root&rsquo;s right subtree, also of type
+   <tt>'key</tt>&nbsp;<tt>bst</tt>. (A
+   &lsquo;&lsquo;real&rsquo;&rsquo; binary search tree would also have a value
+   in each node, but we don&rsquo;t care about values here.)
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Using <tt>BstEmpty</tt> and
+   <tt>BstNode</tt>, you must define an OCaml function
+   <tt>bstDelete</tt>&nbsp;<tt>tree</tt>&nbsp;<tt>key</tt>,
+   where <tt>tree</tt> has the type
+   <tt>'a</tt>&nbsp;<tt>bst</tt>, and <tt>key</tt> has the
+   type <tt>'a</tt>. The function itself has the type
+   <tt>'a</tt>&nbsp;<tt>bst</tt>&nbsp;<tt>-&gt;</tt>&nbsp;<tt>'a</tt>&nbsp;<tt>-&gt;</tt>&nbsp;<tt>'a</tt>&nbsp;<tt>bst</tt>.
+   You may assume that <tt>tree</tt> satisfies the <small>BST</small>
+   property. Your function must return a new <small>BST</small> that is
+   like <tt>tree</tt>, and that satisfies the <small>BST</small>
+   property, but in which the node containing <tt>key</tt> has been
+   deleted. The node containing <tt>key</tt> may appear in any subtree of
+   <tt>tree</tt>. There are at least five different cases that
+   <tt>bstDelete</tt> must handle correctly:
+  </p>
+  <ul>
+   <li>
+   <p align="justify">
+    Deleting from an empty <small>BST</small>.
+   </p>
+   <li>
+   <p align="justify">
+    Deleting from a <small>BST</small> with empty left and right subtrees.
+   </p>
+   <li>
+   <p align="justify">
+    Deleting from a <small>BST</small> with an empty left subtree and a
+    non-empty right subtree.
+   </p>
+   <li>
+   <p align="justify">
+    Deleting from a <small>BST</small> with a non-empty left subtree and
+    an empty right subtree.
+   </p>
+   <li>
+   <p align="justify">
+    Deleting from a <small>BST</small> with a non-empty left subtree and a
+    non-empty right subtree.
+   </p>
+  </ul>
+  <p align="justify">
+   Here are some hints.
+  </p>
+  <ul>
+   <li>
+   <p align="justify">
+    Since <tt>bstDelete</tt> cannot use mutable data structures, it must
+    return a copy of <tt>tree</tt> in which the node containing
+    <tt>key</tt> does not appear. For efficiency, it must not copy
+    <i>all</i> the nodes of <tt>tree</tt>! It must copy only the
+    nodes that are necessary. If <tt>tree</tt> is well-balanced and has
+    <i>n</i>&nbsp;&gt;&nbsp;0 nodes, then <tt>bstDelete</tt> must
+    work in <i>O</i>(log&#8322;&nbsp;<i>n</i>) time.
+   </p>
+   <li>
+   <p align="justify">
+    It&rsquo;s not an error if a node containing <tt>key</tt> never
+    appears in <tt>tree</tt>! If that happens, then
+    <tt>bstDelete</tt> must return either <tt>tree</tt>, or else a
+    partial copy of <tt>tree</tt>&#8212;as described in the previous hint.
+   </p>
+   <li>
+   <p align="justify">
+    The cases shown above can be implemented using OCaml&rsquo;s
+    <tt>match</tt>&#8211;<tt>with</tt> mechanism. Each case will have
+    an expression involving <tt>BstEmpty</tt> and/or <tt>BstNode</tt>
+    on the left of the arrow &lsquo;<tt>-&gt;</tt>&rsquo;. Most cases may
+    have an <tt>if</tt>&#8211;<tt>then</tt>&#8211;<tt>else</tt>
+    on the right of the arrow.
+   </p>
+   <li>
+   <p align="justify">
+    Many of the cases will involve recursive calls. They need not all be tail
+    recursions. Maybe none of them will be! It is impossible (or at least hard)
+    to write <tt>bstDelete</tt> in a completely tail-recursive way.
+   </p>
+   <li>
+   <p align="justify">
+    For the last case, you must write a helper function
+    <tt>bstMaxKey</tt>&nbsp;<tt>tree</tt> that returns the maximum
+    key in <tt>tree</tt>, whose type is
+    <tt>'a</tt>&nbsp;<tt>bst</tt>. It must therefore have the
+    type
+    <tt>'a</tt>&nbsp;<tt>bst</tt>&nbsp;<tt>-&gt;</tt>&nbsp;<tt>'a</tt>.
+    To find the maximum key, <tt>bstMaxKey</tt> must move right down
+    through <tt>tree</tt> as deeply as it can, until it finds the
+    rightmost node. It must then return the key in that node. It must raise the
+    exception <tt>BadEmptyBst</tt> if <tt>tree</tt> is empty, but
+    that should never happen.
+   </p>
+  </ul>
+  <p align="justify">
+   You will receive <b><small>ZERO POINTS</small></b> for this lab if
+   you use loops, mutable data structures, or variables. (OCaml has these, but
+   they have not yet been discussed in the lectures.)
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests3.ml">
+    <tt>tests3.ml</tt>
+   </a>
+   contains a function <tt>bstInsert</tt> that adds a key to a
+   <small>BST</small>, and a function <tt>bstIsIn</tt> that tests if
+   a key is in a <small>BST</small>. It also contains some tests, worth
+   <b>40 points</b>. Run the tests, then submit the OCaml code for your
+   functions <tt>bstDelete</tt> and <tt>bstMaxKey</tt> in a file
+   called <tt>lab3.ml</tt>. If you do not know how to submit your work,
+   then please ask your lab TA&rsquo;s. It must be submitted by <b>11:55
+   <small>PM</small></b> on <b>February 17, 2026</b>.
+  </p>
+ </body>
+</html>
