@@ -1,26 +1,28 @@
-let rec allbut things thing =
-  match things with
-  | [] -> []
-  | head :: tail ->
-      if head = thing then
-        tail
-      else
-        head :: allbut tail thing ;;
+let rec c n k =
+  if k = 0 then
+    1
+  else if n = 0 then
+    0
+  else
+    (c (n - 1) k) + (c (n - 1) (k - 1)) ;;
 
-let rec choose etc things =
-  match things with
-  | [] -> ()
-  | head :: tail ->
-      etc head; choose etc tail ;;
-
-let permute etc things =
-  let rec permuting etc permutedThings unpermutedThings =
-    if unpermutedThings = [] then
-      etc permutedThings
-    else
-      choose
-        (fun thing ->
-          permuting etc (thing :: permutedThings) (allbut unpermutedThings thing))
-        unpermutedThings
+type key = Key of int * int ;;
+let memyC n k =
+  let memo = Hashtbl.create (n * k) in
+  let rec memyCing n k =
+    let key = Key (n, k) in
+    let value = Hashtbl.find_opt memo key in
+    match value with
+    | Some v -> v
+    | None ->
+      let result =
+        if k = 0 then
+          1
+        else if n = 0 then
+          0
+        else
+          (memyCing (n - 1) k) + (memyCing (n - 1) (k - 1)) in
+      Hashtbl.add memo key result;
+      result
   in
-  permuting etc [] things ;;
+  memyCing n k ;;
