@@ -1,0 +1,767 @@
+<!-- Created by Bracy 0.4 on Monday, March 2, 2026 at 2:16 PM CST -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Computer Laboratory 6
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 6</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming Principles</b>
+   <br />
+   <b>Tuesday, March 2, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   Some recursive functions are slow because they compute the same intermediate
+   results many times. These functions may be implemented more efficiently by
+   using <i>memoization,</i> in which each intermediate result is stored
+   in a mutable table as it is computed. Whenever the function needs to compute
+   an intermediate result, it checks the table to see if it has computed that
+   result before. If it has, then it uses the result in the table, without
+   computing it again.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   Suppose that <i>k</i> and <i>n</i> are integers, where
+   <i>k</i>&nbsp;&#8805;&nbsp;0 and <i>n</i>&nbsp;&#8805;&nbsp;0.
+   Then <i>C</i>(<i>n,</i>&nbsp;<i>k</i>) is the number of ways
+   to choose <i>k</i> different elements from a set of <i>n</i>
+   elements. The following double recursion shows how to compute it using only
+   additions and subtractions.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          <i>C</i>(<i>n, k</i>)&nbsp;&nbsp;=&nbsp;&nbsp;
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;
+         </p>
+        </td>
+       </tr>
+      </table>
+     </td>
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr valign="top">
+        <td>
+         <p>
+          &#9127;
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &#9128;
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &#9129;
+         </p>
+        </td>
+       </tr>
+      </table>
+     </td>
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;1<i>&nbsp;</i>
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;0<i>&nbsp;</i>
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;<i>C</i>(<i>n</i> &#8722; 1, <i>k</i>) +
+          <i>C</i>(<i>n</i> &#8722; 1, <i>k</i> &#8722; 1)
+         </p>
+        </td>
+       </tr>
+      </table>
+     </td>
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;&nbsp;&nbsp;if <i>k</i> = 0
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;&nbsp;&nbsp;if <i>k</i> &#8800; 0 &#8743;
+          <i>n</i> = 0
+         </p>
+        </td>
+       </tr>
+       <tr valign="top">
+        <td>
+         <p>
+          &nbsp;&nbsp;&nbsp;&nbsp;if <i>k</i> &#8800; 0 &#8743;
+          <i>n</i> &#8800; 0
+         </p>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   One problem with this recursion is that it computes the same intermediate
+   results, over and over again. For example, the table shows how many times
+   <i>C</i>(8,&nbsp;4) computes each such result. It computes
+   <i>C</i>(0,&nbsp;2) 28 times, <i>C</i>(1,&nbsp;2) 21 times,
+   <i>C</i>(2,&nbsp;2) 15 times, etc. The table might be larger (and the
+   recursion slower) if <i>n</i> and <i>k</i> were larger.
+  </p>
+  <table align="center" border="1" cellpadding="3" cellspacing="0">
+   <tr bgcolor="#D3D3D3" valign="top">
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)&nbsp;&nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b><i>C</i>(<i>n, k</i>)</b>&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;&nbsp;<b>#</b>&nbsp;&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      C(0, 0)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      35
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(0, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      56
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(0, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      28
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(0, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      8
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(0, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(1, 0)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      20
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(1, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      35
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      C(1, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      21
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(1, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      7
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(1, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(2, 0)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      10
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(2, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      20
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(2, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      15
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(2, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      6
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      C(2, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(3, 0)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      4
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(3, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      10
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(3, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      10
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(3, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      5
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(3, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(4, 0)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      C(4, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      4
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(4, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      6
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(4, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      4
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(4, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(5, 1)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(5, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      3
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(5, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      3
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      C(5, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(6, 2)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(6, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      2
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(6, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(7, 3)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(7, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      C(8, 4)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      1
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   The table suggests that this recursion can be computed more efficiently by
+   using memoization. However, if we were computing
+   <i>C</i>(<i>n,</i>&nbsp;<i>k</i>) for real, and not for a
+   laboratory assignment, we would just use a faster algorithm.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   In the lectures, you saw how memoization can use an array or an association
+   list to record intermediate results so they need not be computed again. For
+   this laboratory assignment, you must use a hash table instead. The OCaml
+   library has a module called <tt>Hashtbl</tt> (inexplicably
+   <i>not</i> called <tt>Hasht<u>a</u>bl<u>e</u></tt>) with
+   functions for mutable hash tables. Here are brief descriptions of functions
+   from <tt>Hashtbl</tt> you will need.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>Hashtbl.create ~random: false</tt>&nbsp;&nbsp;<i>s</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Create a new empty hash table and return it. Its size <i>s</i> is an
+      integer greater than 0. It&rsquo;s not obvious how to choose
+      <i>s,</i> or even what it measures, but 1000 seems to work well.
+      Some OCaml functions have optional <i>name parameters,</i> although
+      this hasn&rsquo;t been discussed in the lectures. Here
+      <tt>Hashtbl.create</tt> is called with the name parameter
+      <tt>~random</tt>, whose value is <tt>false</tt>. The hash table
+      <i>will not work</i> without this name parameter.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>Hashtbl.add</tt>&nbsp;&nbsp;<i>t</i>&nbsp;&nbsp;<i>k</i>&nbsp;&nbsp;<i>v</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      In the hash table <i>t,</i> associate the key <i>k</i> with the
+      value <i>v.</i> If <i>k</i> already has a value, then the new
+      value <i>v</i> replaces it.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>Hashtbl.find_opt</tt>&nbsp;&nbsp;<i>t</i>&nbsp;&nbsp;<i>k</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Try to find the value associated with the key <i>k</i> in a hash
+      table <i>t</i>. Return the result as an instance of the type
+      <tt>option</tt>, which is predefined like this.
+     </p>
+     <blockquote>
+      <p>
+       <tt>type&nbsp;'a&nbsp;option&nbsp;=&nbsp;None&nbsp;|&nbsp;Some&nbsp;of&nbsp;'a&nbsp;;;</tt>
+      </p>
+     </blockquote>
+     <p align="justify">
+      If the key <i>k</i> has no corresponding value in <i>t,</i>
+      then return <tt>None</tt>. If <i>k</i> has a value
+      <i>v</i> in <i>t,</i> then return
+      <tt>Some</tt>&nbsp;<i>v.</i> You can use pattern matching to
+      find out which one is returned.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   You must write at least the following OCaml functions. You may also write
+   helper functions if you need them.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>c n k</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Compute <i>C</i>(<i>n,</i>&nbsp;<i>k</i>) using the
+      recursion shown above, but do not use memoization.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>memyC n k</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      A memoized version of <tt>c</tt>. It must compute the same results
+      as <tt>c</tt>, but it must use a hash table to prevent computing the
+      same intermediate result more than once. The hash table must not be
+      visible to functions other than <tt>memyC</tt>. Hint: do not call
+      <tt>c</tt> from <tt>memyC</tt>.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   The execution time of memoized functions is important for this assignment.
+   The function <tt>time</tt> tests how long a function takes to compute
+   its value. It takes a string <tt>title</tt> and a function without
+   arguments <tt>func</tt> as its parameters.
+  </p>
+  <blockquote>
+   <p>
+    <tt>let&nbsp;time&nbsp;title&nbsp;func&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;let&nbsp;t0&nbsp;=&nbsp;Sys.time&nbsp;()&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;in&nbsp;let&nbsp;result&nbsp;=&nbsp;func&nbsp;()&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;let&nbsp;t1&nbsp;=&nbsp;Sys.time&nbsp;()&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;Printf.printf&nbsp;"%s&nbsp;%f&nbsp;seconds\n"&nbsp;title&nbsp;(t1&nbsp;-.&nbsp;t0)&nbsp;;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   For example, the call
+   <tt>(time</tt>&nbsp;<tt>"c</tt>&nbsp;<tt>test"</tt>&nbsp;<tt>(fun</tt>&nbsp;<tt>()</tt>&nbsp;<tt>-&gt;</tt>&nbsp;<tt>c</tt>&nbsp;<tt>8</tt>&nbsp;<tt>4))</tt>
+   prints a message containing <tt>"c</tt>&nbsp;<tt>test"</tt> about
+   how long <tt>c</tt>&nbsp;<tt>8</tt>&nbsp;<tt>4</tt> takes to
+   execute. It then returns the value of
+   <tt>c</tt>&nbsp;<tt>8</tt>&nbsp;<tt>4</tt>.
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests6.ml">
+    <tt>tests6.ml</tt>
+   </a>
+   contains a definition of the function <tt>time</tt>. It also contains
+   some tests, worth <b>50 points</b>. Run these tests on your code for
+   this lab. You must submit your work on a file called <tt>lab6.ml</tt>.
+   Your work must be submitted by <b>11:55 <small>PM</small></b> on
+   <b>March 17, 2025</b>. This is the Tuesday after Spring Break.
+   Y<small>OU ARE NOT ALLOWED TO WORK ON THIS LAB ASSIGNMENT
+   DURING</small> S<small>PRING</small> B<small>REAK</small>! If
+   you do not know how and where to submit your work, then please ask your lab
+   TA&rsquo;s.
+  </p>
+ </body>
+</html>
