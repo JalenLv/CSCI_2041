@@ -1,0 +1,819 @@
+<!-- Created by Bracy 0.4 on Wednesday, March 4, 2026 at 7:03 PM CST -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Programming Project 1
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>CS<small>CI</small> 2041 Advanced Programming Principles</b>
+   <br />
+   <b>Programming Project 1</b>
+   <br />
+   <b>Spring 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   It&rsquo;s possible to solve an equation <i>numerically,</i> by
+   computing numbers for its variables. It&rsquo;s also possible so solve an
+   equation <i>symbolically,</i> by using algebra. For example, to solve
+   the equation
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>&nbsp;+&nbsp;<i>b</i>&nbsp;=&nbsp;<i>v</i>
+   symbolically for <i>u,</i> we&rsquo;d first subtract <i>b</i> from
+   both sides, giving
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>&nbsp;=&nbsp;<i>v</i>&nbsp;&#8722;&nbsp;<i>b</i>.
+   Then we&rsquo;d divide both sides by <i>a</i>, giving
+   <i>u</i>&nbsp;=&nbsp;(<i>v</i>&nbsp;&#8722;&nbsp;<i>b</i>)&nbsp;/&nbsp;<i>a</i>.
+   Assume that we never divide by 0. In this project, you will write an OCaml
+   program that uses algebraic identities to solve equations. To simplify the
+   problem, the equations will use only variables, the unary
+   &lsquo;&#8722;&rsquo; operator, and the binary &lsquo;+&rsquo;,
+   &lsquo;&#8722;&rsquo;, &lsquo;&#215;&rsquo;, and &lsquo;/&rsquo; operators.
+   Also, the program need only solve for a variable that appears exactly once
+   in the equation.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   Here&rsquo;s a mathematical description of how your program must work.
+   Suppose that the rule <i>L</i>&nbsp;&#8658;&nbsp;<i>R</i> means
+   that an equation <i>L</i> may be algebraically transformed to an
+   equivalent equation <i>R.</i> For example,
+   <i>A</i>&nbsp;+&nbsp;<i>B</i>&nbsp;=&nbsp;<i>C</i>&nbsp;&#8658;&nbsp;<i>B</i>&nbsp;=&nbsp;<i>C</i>&nbsp;&#8722;&nbsp;<i>A</i>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A variable is said to be <i>inside</i>
+   an expression if it appears in that expression at least once. For example,
+   the variable <i>u</i> is inside the expression
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>, but it is not inside the
+   expression <i>v</i>&nbsp;&#8722;&nbsp;<i>b.</i> Each variable is
+   inside itself, so that <i>u</i> is inside <i>u.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose that <i>A, B,</i> and
+   <i>C</i> are expressions, and that some variable <i>v</i> always
+   appears exactly once inside <i>A,</i> or exactly once inside
+   <i>B,</i> but not both. Then the following rules show how an equation
+   can be solved for <i>v.</i> Each rule always leaves <i>v</i> on
+   the left side of the equation. Each rule also leaves the left side of the
+   equation simpler than it was before the rule was applied. As a result, if we
+   repeatedly apply the rules to an equation, one at a time, then <i>v</i>
+   will eventually be left alone on the left side&#8212;and the equation is
+   solved for <i>v.</i>
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       &#8722; <i>B</i> = <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&#8658;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>B</i> = &#8722; <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9127;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>A</i> = <i>C</i> &#8722; <i>B</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>A</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>A</i> + <i>B</i> = <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&#8658;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9128;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9129;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>B</i> = <i>C</i> &#8722; <i>A</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>B</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9127;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>A</i> = <i>C</i> + <i>B</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>A</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>A</i> &#8722; <i>B</i> = <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&#8658;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9128;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9129;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>B</i> = <i>A</i> &#8722; <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>B</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9127;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>A</i> = <i>C</i> / <i>B</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>A</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>A</i> &#215; <i>B</i> = <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&#8658;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9128;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9129;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>B</i> = <i>C</i> / <i>A</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>B</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9127;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>A</i> = <i>C</i> &#215; <i>B</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>A</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>A</i> / <i>B</i> = <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&#8658;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9128;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &#9129;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>B</i> = <i>A</i> / <i>C</i>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       if <i>v</i> is inside <i>B</i>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   For example, suppose we want to solve the equation
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>&nbsp;+&nbsp;<i>b</i>&nbsp;=&nbsp;<i>v</i>
+   for <i>u.</i> We first apply the &lsquo;+&rsquo; rule, giving
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>&nbsp;=&nbsp;<i>v</i>&nbsp;&#8722;
+   <i>b.</i> We then apply the &lsquo;&#215;&rsquo; rule, giving
+   <i>u</i>&nbsp;=&nbsp;(<i>v</i>&nbsp;&#8722;&nbsp;<i>b</i>)&nbsp;/&nbsp;<i>a.</i>
+   Since <i>u</i> is now alone on the left side, the equation is solved.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   To simplify grading, you must use the OCaml type <tt>expression</tt> to
+   represent equations and expressions. OCaml code for this type appears in the
+   file
+   <a href="expression.ml">
+    <tt>expression.ml.</tt>
+   </a>
+   The constructors have short snappy names because you&rsquo;ll use them a
+   lot. A comment after each constructor describes what it represents.
+  </p>
+  <blockquote>
+   <p>
+    <tt>type&nbsp;expression&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Var&nbsp;of&nbsp;string&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;a,&nbsp;b,&nbsp;c&nbsp;&#8943;&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Neg&nbsp;of&nbsp;expression&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;&nbsp;&nbsp;&#8722;&nbsp;R&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Add&nbsp;of&nbsp;expression&nbsp;&#8727;&nbsp;expression&nbsp;|&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;L&nbsp;+&nbsp;R&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Div&nbsp;of&nbsp;expression&nbsp;&#8727;&nbsp;expression&nbsp;|&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;L&nbsp;/&nbsp;R&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Equ&nbsp;of&nbsp;expression&nbsp;&#8727;&nbsp;expression&nbsp;|&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;L&nbsp;=&nbsp;R&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Mul&nbsp;of&nbsp;expression&nbsp;&#8727;&nbsp;expression&nbsp;|&nbsp;&nbsp;&nbsp;(&#8727;&nbsp;L&nbsp;&#215;&nbsp;R&nbsp;&#8727;)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;Sub&nbsp;of&nbsp;expression&nbsp;&#8727;&nbsp;expression&nbsp;;;&nbsp;&nbsp;(&#8727;&nbsp;L&nbsp;&#8722;&nbsp;R&nbsp;&#8727;)</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   For example, the equation
+   <i>a</i>&nbsp;&#215;&nbsp;<i>u</i>&nbsp;+&nbsp;<i>b</i>&nbsp;=&nbsp;<i>v</i>
+   is represented as an instance of <tt>expression</tt> like this.
+  </p>
+  <blockquote>
+   <p>
+    <tt>(Equ&nbsp;(Add&nbsp;(Mul&nbsp;(Var&nbsp;"a",&nbsp;Var&nbsp;"u"),&nbsp;Var&nbsp;"b"),&nbsp;Var&nbsp;"v"))</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   You must write the following exception and functions. Again to simplify
+   grading, you must use the same names for functions and their parameters that
+   are shown here. You may also write as many additional helper functions as
+   you need, either external helpers, internal helpers, or a mixture of the
+   two.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>SolvingError</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Exception. It&rsquo;s raised when something erroneous or
+      unexpected happens in the functions described below. It&rsquo;s helpful
+      if <tt>SolvingError</tt> contains a <tt>string</tt> that
+      explains why it was raised.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>isInside name expression</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (10 points.) A function of type
+      <tt>string</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>bool</tt>.
+      Return <tt>true</tt> if a <tt>Var</tt> containing
+      <tt>name</tt> appears at least once within <tt>expression</tt>.
+      Return <tt>false</tt> otherwise.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>solver name left right</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (25 points.) A function of type
+      <tt>string</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>.
+      This does all the work for the equation solver. Assume that
+      <tt>left</tt> is the left side of the equation to be solved, and
+      <tt>right</tt> is the right side. Also assume that a
+      <tt>Var</tt> containing <tt>name</tt> is inside
+      <tt>left</tt>. Repeatedly apply the algebraic rules shown above to
+      <tt>left</tt> and <tt>right</tt>, producing new
+      <tt>left</tt>&rsquo;s and <tt>right</tt>&rsquo;s, always
+      leaving the <tt>Var</tt> containing <tt>name</tt> inside
+      <tt>left</tt>. Continue until finally a <tt>Var</tt> containing
+      <tt>name</tt> is alone as <tt>left</tt>. Then return
+      <tt>Equ</tt>&nbsp;<tt>(left,</tt>&nbsp;<tt>right)</tt>,
+      representing the solved equation.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>solve name equation</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (10 points.) A function of type
+      <tt>string</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>&nbsp;<tt>&#8722;&gt;</tt>&nbsp;<tt>expression</tt>.
+      Here <tt>equation</tt> must have the form
+      <tt>Equ</tt>&nbsp;<tt>(left,</tt>&nbsp;<tt>right)</tt>.
+      Assume that a <tt>Var</tt> containing <tt>name</tt> appears in
+      either <tt>left</tt> or <tt>right</tt>, but not both. Call
+      <tt>solver</tt> with <tt>left</tt> and <tt>right</tt>, so
+      that a <tt>Var</tt> containing <tt>name</tt> is inside
+      <tt>left</tt>. Finally return <tt>solver</tt>&rsquo;s result, a
+      solved equation.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Hint: the OCaml pattern matching mechanism
+   (<tt>match</tt>-<tt>with</tt>) can be used to apply rules. Tail
+   recursions can be used to apply them repeatedly until an equation is solved.
+  </p>
+  <p>
+   <b>3. Example.</b>
+  </p>
+  <p align="justify">
+   Here&rsquo;s an example. To run the equation solver, call
+   <tt>solve</tt> with a <tt>string</tt> that represents a variable,
+   and an <tt>expression</tt> that represents an equation, as described
+   above. Suppose you call <tt>solve</tt> like this.
+  </p>
+  <blockquote>
+   <p>
+    <tt>solve&nbsp;"u"&nbsp;(Equ&nbsp;(Add&nbsp;(Mul&nbsp;(Var&nbsp;"a",&nbsp;Var&nbsp;"u"),&nbsp;Var&nbsp;"b"),&nbsp;Var&nbsp;"v"))&nbsp;;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Then <tt>solve</tt> must return a new equation like this.
+  </p>
+  <blockquote>
+   <p>
+    <tt>Equ&nbsp;(Var&nbsp;"u",&nbsp;Div&nbsp;(Sub&nbsp;(Var&nbsp;"v",&nbsp;Var&nbsp;"b"),&nbsp;Var&nbsp;"a"))</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Of course to adequately test <tt>solver</tt>, you must call it on more
+   examples than just this one.
+  </p>
+  <p>
+   <b>4. Deliverables.</b>
+  </p>
+  <p align="justify">
+   Unlike the laboratory assignments, <b><small>YOU ARE NOT ALLOWED TO WORK
+   WITH A PARTNER ON THIS PROJECT</small>!</b> Although you may discuss
+   the project informally and in general terms with other students,
+   <b><small>EVERYTHING YOU WRITE MUST BE YOURS ALONE</small>!</b>
+   Also unlike the laboratory assignments, there are no test cases provided.
+   Instead, the TA&rsquo;s will read your code in detail and determine your
+   grade based on how well it works. You may invent your own test cases if you
+   wish, but they will not determine your grade.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This project is worth <b>50 points</b>,
+   and will be due at <b>11:55 <small>PM</small></b> on <b>March
+   25, 2026</b>, giving you about two weeks to complete it, ignoring Spring
+   Break. Turn in your code, including any test cases you write, in a file
+   called <tt>project1.ml</tt>. <b>Y<small>OU ARE NOT ALLOWED TO WORK
+   ON THIS PROJECT DURING</small> S<small>PRING</small>
+   B<small>REAK</small>!</b> Have fun instead &#9786;.
+  </p>
+ </body>
+</html>
