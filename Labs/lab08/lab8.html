@@ -1,0 +1,278 @@
+<!-- Created by Bracy 0.4 on Monday, March 23, 2026 at 3:05 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Programming Laboratory 8
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 8</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming Principles</b>
+   <br />
+   <b>March 24, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   A large program may be hundreds or thousands of pages long. It may use
+   thousands of names. As a result, many programming languages provide
+   mechanisms for dividing names into smaller and more manageable groups. OCaml
+   does this using <i>modules</i> and <i>module types.</i> In this
+   laboratory assignment, you will write a module that defines association
+   lists, and a module type that describes that module.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   An <i>association list</i> is an ordered finite sequence of zero or
+   more <i>key</i>-<i>value</i> pairs. (You&rsquo;ve seen several
+   slightly different implementations of association lists in the lectures.) If
+   the subscripted <i>k</i>&rsquo;s are keys, and the subscripted
+   <i>v</i>&rsquo;s are values, then an association list might be written
+   (in a mathematical notation, not OCaml!) like this.
+  </p>
+  <blockquote>
+   <p>
+    [ <i>k</i><sub>1</sub> &#8594; <i>v</i><sub>1</sub>,
+    <i>k</i><sub>2</sub> &#8594; <i>v</i><sub>2</sub> ...,
+    <i>k<sub>n</sub></i> &#8594; <i>v<sub>n</sub></i> ]
+   </p>
+  </blockquote>
+  <p align="justify">
+   We say that each key <i>k&#11388;</i> is <i>associated</i> with
+   its value <i>v&#11388;</i>. For example, the association list
+   <i>A</i>&#8320; associates Arabic digits with Roman numerals.
+  </p>
+  <blockquote>
+   <p>
+    <i>A</i><sub>0</sub>&nbsp;&nbsp;=&nbsp;&nbsp; [ 1 &#8594;
+    <small>I</small>, 2 &#8594; <small>II</small>, 3 &#8594;
+    <small>III</small>, 4 &#8594; <small>IIII</small>, 5 &#8594;
+    <small>V</small>, 6 &#8594; <small>VI</small>, 7 &#8594;
+    <small>VII</small>, 8 &#8594; <small>VIII</small>, 9 &#8594;
+    <small>IX</small> ]
+   </p>
+  </blockquote>
+  <p align="justify">
+   We can <i>get</i> the value of a key in an association list. For
+   example, the value of key 4 in <i>A</i>&#8320; is
+   <small>IIII</small>. We can <i>put</i> a key-value pair into an
+   association list by adding it to the front, producing a new association
+   list. For example, we can put the key 4 and its value <small>IV</small>
+   into <i>A</i>&#8320;, to produce a new association list
+   <i>A</i>&#8321;.
+  </p>
+  <blockquote>
+   <p>
+    <i>A</i><sub>1</sub>&nbsp;&nbsp;=&nbsp;&nbsp; [ 4 &#8594;
+    <small>IV</small>, 1 &#8594; <small>I</small>, 2 &#8594;
+    <small>II</small>, 3 &#8594; <small>III</small>, 4 &#8594;
+    <small>IIII</small>, 5 &#8594; <small>V</small>, 6 &#8594;
+    <small>VI</small>, 7 &#8594; <small>VII</small>, 8 &#8594;
+    <small>VIII</small>, 9 &#8594; <small>IX</small> ]
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now the value of key 4 in <i>A</i>&#8321; is <small>IV</small>
+   instead of <small>IIII</small> as it was before. When we get the value
+   of a key, we search the association list from left to right for the first
+   pair that gives a value to the key. Finally, we can also <i>delete</i>
+   a key-value pair from an association list. If we delete the pair with the
+   key 5, we get another new association list, <i>A</i>&#8322;.
+  </p>
+  <blockquote>
+   <p>
+    <i>A</i><sub>2</sub>&nbsp;&nbsp;=&nbsp;&nbsp; [ 4 &#8594;
+    <small>IV</small>, 1 &#8594; <small>I</small>, 2 &#8594;
+    <small>II</small>, 3 &#8594; <small>III</small>, 4 &#8594;
+    <small>IIII</small>, 6 &#8594; <small>VI</small>, 7 &#8594;
+    <small>VII</small>, 8 &#8594; <small>VIII</small>, 9 &#8594;
+    <small>IX</small> ]
+   </p>
+  </blockquote>
+  <p align="justify">
+   When we delete a key-value pair in this way, we also search the association
+   list from left to right, and we delete only the first key-value pair that we
+   find. For example, if we deleted the pair with the key 4, we would get a new
+   association list that associates 4 with <small>IIII</small>, just as
+   <i>A</i>&#8320; did.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Association lists are <i>immutable</i>.
+   When we put a new key-value pair into a list, or delete an old key-value
+   pair from a list, we always get a <i>new</i> list. We never change
+   existing association lists.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   For this laboratory assignment, you must write an OCaml module and module
+   type that implements association lists, as described below.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>Associaty</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Module type. It must describe the contents of the module
+      <tt>Association</tt>, including <tt>NoSuchKey</tt>,
+      <tt>delete</tt>, <tt>get</tt>, <tt>make</tt>,
+      <tt>put</tt>, and <tt>t</tt> as described below. It must not
+      describe <tt>error</tt>, so that function will not be visible
+      outside the module <tt>Association</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>Association</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Module. It must define <tt>NoSuchKey</tt>, <tt>delete</tt>,
+      <tt>error</tt>, <tt>get</tt>, <tt>make</tt>,
+      <tt>put</tt>, and <tt>t</tt>, as described below.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>t</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      The type of an association list. By OCaml convention, if a module defines
+      a data type, then that type is called <tt>t</tt>. Here the type
+      <tt>t</tt> must have a constructor <tt>Empty</tt> that
+      represents an empty association list. It must also have a constructor
+      <tt>Pair</tt> that makes an ordered triple which contains a key, the
+      key&rsquo;s value, and the rest of the association list.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>NoSuchKey</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Exception. Raised by the function <tt>error</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>delete pairs key</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Function. Here <tt>pairs</tt> is an association list (of type
+      <tt>t</tt>) and <tt>key</tt> is a key. Return a new association
+      list that is like <tt>pairs</tt> except that the first appearance of
+      <tt>key</tt> and its value are deleted. If <tt>key</tt> does
+      not appear at least once in <tt>pairs</tt> then call
+      <tt>error</tt>. Hint: Do not write <tt>delete</tt> as a tail
+      recursion.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>error ()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Function. Raise the exception <tt>NoSuchKey</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>get pairs key</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Function. Here <tt>pairs</tt> is an association list (of type
+      <tt>t</tt>) and <tt>key</tt> is a key. Return the value of
+      <tt>key</tt> in <tt>pairs</tt>. If <tt>key</tt> does not
+      appear at least once in <tt>pairs</tt> then call
+      <tt>error</tt>. Hint: Write <tt>get</tt> as a tail recursion.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>make ()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Function. By OCaml convention, if a module defines a data type, then it
+      defines a function called <tt>make</tt> that returns an instance of
+      that type. Return a new empty association list (of type <tt>t</tt>).
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>put key value pairs</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Function. Return a new association list (of type <tt>t</tt>) that is
+      like <tt>pairs</tt> except that in this list, the value of
+      <tt>key</tt> is <tt>value</tt>. Hint: Write one short line of
+      OCaml code.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   As you may have guessed, the point of this assignment is not to introduce
+   association lists, since you&rsquo;ve seen those before. The point is to
+   make you think about modules and their types.
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests8.ml">
+    <tt>tests8.ml</tt>
+   </a>
+   contains some tests, worth 30 points. Run these tests with OCaml. When you
+   think your code is correct, submit it in a file called
+   <tt>lab8.ml</tt>. If you do not know how or where to submit your code,
+   then please ask your lab TA&rsquo;s. Your work must be submitted by
+   <b>11:55 <small>PM</small></b> on <b>March 31, 2026</b>.
+  </p>
+ </body>
+</html>
