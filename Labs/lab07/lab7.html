@@ -1,0 +1,278 @@
+<!-- Created by Bracy 0.4 on Monday, March 16, 2026 at 6:38 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Computer Laboratory 7
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 7</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming</b>
+   <br />
+   <b>Tuesday, March 17, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   This laboratory assignment asks you to write a few simple functions using
+   OCaml&rsquo;s built-in lazy evaluation mechanism.
+  </p>
+  <p>
+   <b>1. Implementation.</b>
+  </p>
+  <p align="justify">
+   OCaml provides an object (ungrammatically) called a <i>lazy</i> that
+   implements lazy evaluation. The following module, type, operator, and
+   functions work with lazies.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>Lazy</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      The module <tt>Lazy</tt> contains OCaml code that implements lazies.
+      To use lazies, you must place this line:
+     </p>
+     <blockquote>
+      <p>
+       <tt>open Lazy ;;</tt>
+      </p>
+     </blockquote>
+     <p align="justify">
+      early in your source file. Note that OCaml module names begin with upper
+      case letters.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <i>s</i><tt>&nbsp;Lazy.t</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      The type of a lazy that provides a value of type <i>s.</i> For
+      example, a lazy that provides an integer has the type
+      <tt>int</tt>&nbsp;<tt>Lazy.t</tt>, and a lazy that provides a
+      string has the type <tt>string</tt>&nbsp;<tt>Lazy.t</tt>, etc.
+      By convention, if a module <tt>M</tt> defines a type, then that type
+      is called <tt>M.t</tt>. (Mysteriously, the type
+      <i>s</i>&nbsp;<tt>Lazy.t</tt> can also be written as
+      <i>s</i>&nbsp;<tt>lazy_t</tt>.)
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>lazy&nbsp;</tt><i>e</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return a new lazy that contains <i>e,</i> so it can be evaluated
+      later. Do not evaluate the expression <i>e</i> yet. Note that
+      <tt>lazy</tt> is a built-in operator in OCaml.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>force&nbsp;</tt><i>l</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Here <i>l</i> is a lazy. If <tt>force</tt> has never been
+      called on <i>l,</i> then <i>l</i> contains an unevaluated
+      expression. Evaluate that expression, store the expression&rsquo;s value
+      in <i>l,</i> and return that value. If <tt>force</tt> has been
+      called on <i>l</i> before, then return the value stored in
+      <i>l.</i>
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   You must write a type and four functions, as described below.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <i>s</i><tt>&nbsp;lazyList</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This is the type of a lazy list whose elements have the type
+      <i>s.</i> Both the head and the tail of such a list must be
+      evaluated lazily. The type must have two constructors. The constructor
+      <tt>LazyEmpty</tt> must return an empty lazy list. The constructor
+      <tt>LazyNode</tt>&nbsp;<tt>(</tt><i>h</i><tt>,</tt>&nbsp;<i>t</i><tt>)</tt>
+      must return a new lazy list whose head is <i>h</i> and whose tail is
+      <i>t.</i> Both <i>h</i> and <i>t</i> must be lazies.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>LazyListError</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      An exception. This will be raised if <tt>lazyHead</tt>,
+      <tt>lazyTail</tt>, or <tt>lazyTake</tt> are given arguments
+      different from what they expect.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>lazyCons&nbsp;</tt><i>h</i><tt>&nbsp;</tt><i>t</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return a lazy list whose head is <i>h</i> and whose tail is
+      <i>t.</i> Both <i>h</i> and <i>t</i> must be lazies.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>lazyHead&nbsp;</tt><i>l</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Here <i>l</i> is a lazy list, of type
+      <i>s</i>&nbsp;<tt>lazyList</tt>. If <i>l</i> is an empty
+      lazy list, then raise <tt>LazyListError</tt>. Otherwise return the
+      evaluated head of <i>l,</i> whose type is <i>s.</i>
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>lazyTail&nbsp;</tt><i>l</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Here <i>l</i> is a lazy list, of type
+      <i>s</i>&nbsp;<tt>lazyList</tt>. If <i>l</i> is an empty
+      lazy list, then raise <tt>LazyListError</tt>. Otherwise return the
+      evaluated tail of <i>l,</i> whose type is
+      <i>s</i>&nbsp;<tt>lazyList</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>lazyTake&nbsp;</tt><i>l</i><tt>&nbsp;</tt><i>n</i>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Here <i>l</i> is a lazy list, of type
+      <i>s</i>&nbsp;<tt>lazyList</tt>. Return an ordinary list of the
+      first <i>n</i> elements from <i>l,</i> where <i>n</i> is
+      an integer greater than or equal to 0. The returned list must have the
+      type <i>s</i>&nbsp;<tt>list</tt>. If <i>l</i> does not
+      have at least <i>n</i> elements, then raise
+      <tt>LazyListError</tt>. You may use <tt>lazyCons</tt>,
+      <tt>lazyHead</tt>, and <tt>lazyTail</tt> as helpers.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   The function <tt>lazyInts</tt> is used to help test your code. It
+   returns a new lazy list of unevaluated integers from <i>start</i> to
+   <i>stop,</i> inclusive. Each time an element of the lazy list is
+   evaluated, it prints a message.
+  </p>
+  <blockquote>
+   <p>
+    <tt>let&nbsp;lazyInts&nbsp;start&nbsp;stop&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;let&nbsp;rec&nbsp;lazyInting&nbsp;which&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;which&nbsp;&lt;=&nbsp;stop&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;then&nbsp;lazyCons&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(lazy&nbsp;(Printf.printf&nbsp;"Computed&nbsp;integer&nbsp;%i\n"&nbsp;which&nbsp;;&nbsp;which))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(lazyInting&nbsp;(which&nbsp;+&nbsp;1))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;LazyEmpty&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;in&nbsp;lazyInting&nbsp;start&nbsp;;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The function <tt>lazyFibs</tt> is also used to help test your code. It
+   returns a new lazy list of all unevaluated Fibonacci numbers. The lazy list
+   is infinitely long, ignoring arithmetic overflow. Each time an element of
+   the lazy list is evaluated, it prints a message.
+  </p>
+  <blockquote>
+   <p>
+    <tt>let&nbsp;lazyFibs&nbsp;()&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;let&nbsp;rec&nbsp;lazyFibbing&nbsp;left&nbsp;right&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;lazyCons&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(lazy&nbsp;(Printf.printf&nbsp;"Computed&nbsp;Fibonacci&nbsp;%i\n"&nbsp;left&nbsp;;&nbsp;left))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(lazy&nbsp;(lazyFibbing&nbsp;right&nbsp;(left&nbsp;+&nbsp;right)))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;in&nbsp;lazyFibbing&nbsp;0&nbsp;1&nbsp;;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Note that <tt>lazyFibs</tt> would not terminate if it was evaluated
+   eagerly!
+  </p>
+  <p>
+   <b>2. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests7.ml">
+    <tt>tests7.ml</tt>
+   </a>
+   contains some tests, along with definitions of the functions
+   <tt>lazyInts</tt> and <tt>lazyFibs</tt>. Note that
+   <b>C<small>ANVAS HAS A BUG</small></b> that prevents it from
+   previewing this file! To avoid the bug, download <tt>tests7.ml</tt> to
+   your computer and read it there. The tests are worth <b>35 points.</b>
+   Submit your work on a file called <tt>lab7.ml</tt> by <b>11:55
+   <small>PM</small></b> on <b>Tuesday, March 24, 2026</b>. If you
+   do not know how to submit it, then please ask your lab TA&rsquo;s.
+  </p>
+ </body>
+</html>
