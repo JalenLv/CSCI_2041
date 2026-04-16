@@ -1,0 +1,839 @@
+<!-- Created by Bracy 0.4 on Monday, March 30, 2026 at 5:35 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Computer Laboratory 9
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 9</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming Principles</b>
+   <br />
+   <b>March 31, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   In this laboratory assignment, you&rsquo;ll translate three Lisp functions
+   into equivalent OCaml functions. This will help explain how Lisp works,
+   allegedly helping to write an interpreter for it later in the course. It
+   will also show how Lisp and OCaml differ.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   In the lectures, we defined an OCaml type <tt>thing</tt> that
+   represents a Lisp object. For this assignment, we&rsquo;ll use a simpler
+   version of <tt>thing</tt>, shown below. We&rsquo;ve removed the parts
+   about closures, environments, and primitives, because they&rsquo;re not
+   needed here.
+  </p>
+  <blockquote>
+   <p>
+    <tt>type&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;thing&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;Cons&nbsp;of&nbsp;thing&nbsp;&#8727;&nbsp;thing&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;Nil&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;int&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;of&nbsp;string&nbsp;;;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   We&rsquo;ll also use Lisp expressions that are briefly defined in the
+   following table. The lectures described them in more detail. Remember that
+   &lsquo;&lsquo;Lisp&rsquo;&rsquo; is really a name for a family of related
+   languages. A real Lisp system might have functions other than these, or may
+   define them differently.
+  </p>
+  <table align="center" border="1" cellpadding="3" cellspacing="0">
+   <tr bgcolor="#D3D3D3" valign="top">
+    <td>
+     <p align="center">
+      &nbsp;<b><small>LISP</small></b>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;<b><small>DESCRIPTION</small></b>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>nil</tt>
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Empty list, Boolean <i>false</i>.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>t</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Boolean <i>true.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(and</tt> <i>e</i>&#8321; <i>e</i>&#8322; ...
+      <i>e&#8345;</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if <i>e</i>&#8321; <i>e</i>&#8322; ...
+      <i>e&#8345;</i> are not all <tt>nil</tt>.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(car</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;First element of the list <i>e.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(cdr</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;A list like <i>e</i> but without its first element.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(cons</tt> <i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;A list whose <tt>car</tt> is <i>e</i>&#8321; and whose
+      <tt>cdr</tt> is <i>e</i>&#8322;.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(define</tt> <i>s e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Let the value of symbol <i>s</i> be <i>e.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(if</tt> <i>e</i>&#8321; <i>e</i>&#8322;
+      <i>e</i>&#8323;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;If <i>e</i>&#8321; is <tt>nil,</tt> then evaluate
+      <i>e</i>&#8323;, else evaluate <i>e</i>&#8322;.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(is-cons</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if <i>e</i> is a nonempty list.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(&#955;</tt>&nbsp;<tt>(</tt><i>s</i>&#8321;
+      <i>s</i>&#8322; ... <i>s&#8345;</i><tt>)</tt>
+      <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Anonymous function with parameters <i>s</i>&#8321;
+      <i>s</i>&#8322; ..., <i>s&#8345;</i> and body
+      <i>e</i>.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(or</tt> <i>e</i>&#8321; <i>e</i>&#8322; ...
+      <i>e&#8345;</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if at least one of <i>e</i>&#8321; <i>e</i>&#8322;
+      ... <i>e&#8345;</i> is not <tt>nil</tt>.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(not</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if <i>e</i> is not <tt>nil</tt>.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(quote</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Unevaluated <i>e</i> (so <i>e</i> is treated as
+      data).&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(+</tt> <i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Sum of numbers: <i>e</i>&#8321; + <i>e</i>&#8322;.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(&#8727;</tt> <i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Product of numbers: <i>e</i>&#8321; &#215;
+      <i>e</i>&#8322;.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(&#8722;</tt> <i>e</i><tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Negate a number: &#8722; <i>e</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(&#8722;</tt>&nbsp;<i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Difference of numbers: <i>e</i>&#8321; &#8722;
+      <i>e</i>&#8322;.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(/</tt>&nbsp;<i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Quotient of numbers: <i>e</i>&#8321; / <i>e</i>&#8322;,
+      where <i>e</i>&#8322; &#8800; 0.&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;<tt>(=</tt> <i>e</i>&#8321;
+      <i>e</i>&#8322;<tt>)</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if numbers, pointers, or symbols <i>e</i>&#8321; and
+      e&#8322; are equal.&nbsp;
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   You won&rsquo;t need everything in the table to do this assignment.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   You must translate three Lisp functions, <tt>every</tt>,
+   <tt>substitute</tt>, and <tt>questy-equal</tt>, into equivalent
+   OCaml functions. Your OCaml functions may need to raise exceptions if they
+   are called with arguments different from what they expect. You may define
+   additional helper functions if you wish.
+  </p>
+  <p>
+   <b>2.1. <i>Every.</i></b>
+  </p>
+  <p align="justify">
+   A <i>predicate</i> is a function that tests its arguments, returning
+   <i>true</i> if the test succeeds, and <i>false</i> if the test
+   fails. The higher-order Lisp function <tt>every</tt> tests if all
+   elements of the list <tt>elements</tt> make <tt>predicate</tt>
+   succeed. (Actually it tests if no element makes <tt>predicate</tt>
+   fail.)
+  </p>
+  <blockquote>
+   <p>
+    <tt>(define&nbsp;every&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;(&#955;&nbsp;(predicate&nbsp;elements)&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(is-cons&nbsp;elements)&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(predicate&nbsp;(car&nbsp;elements))&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(every&nbsp;predicate&nbsp;(cdr&nbsp;elements))&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nil)&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t)))</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here are some examples of <tt>every</tt>, where the symbol
+   &lsquo;&#8658;&rsquo; means <i>returns.</i>
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every (&#955; (n) (= n 0)) nil)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every (&#955; (n) (= n 0)) (quote (0)))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every (&#955; (n) (= n 0)) (quote (0 0)))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every (&#955; (n) (= n 0)) (quote (0 1)))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>nil</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every is-cons nil)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every is-cons (quote ((A) (B))))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(every is-cons (quote (A (B))))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>nil</tt>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Your OCaml function <tt>every</tt> must have the type
+   <tt>(thing&nbsp;-&gt;&nbsp;bool)&nbsp;-&gt;&nbsp;thing&nbsp;-&gt;&nbsp;bool</tt>.
+   Note that it must return an OCaml Boolean, not a Lisp Boolean.
+  </p>
+  <p>
+   <b>2.2. <i>Substitute.</i></b>
+  </p>
+  <p align="justify">
+   The function <tt>substitute</tt> takes three arguments: a list called
+   <tt>elements</tt>, a symbol called <tt>old</tt>, and an object
+   called <tt>new</tt>. It returns a copy of <tt>elements</tt> in
+   which all appearances of <tt>old</tt> are replaced by
+   <tt>new</tt>.
+  </p>
+  <blockquote>
+   <p>
+    <tt>(define&nbsp;substitute&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;(&#955;&nbsp;(elements&nbsp;old&nbsp;new)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(is-cons&nbsp;elements)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(cons&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(=&nbsp;(car&nbsp;elements)&nbsp;old)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(car&nbsp;elements))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substitute&nbsp;(cdr&nbsp;elements)&nbsp;old&nbsp;new))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nil)))</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here are some examples of <tt>substitute</tt>.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(substitute nil (quote A) (quote B))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>nil</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(substitute (quote (A B A)) (quote A) (quote B))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>(quote (B B B))</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(substitute (quote (X Y Z)) (quote A) (quote B))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>(quote (X Y Z))</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(substitute (quote (A (B))) (quote B) (quote A))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>(quote (A (B)))</tt>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Your OCaml function <tt>substitute</tt> must have the type
+   <tt>thing&nbsp;-&gt;&nbsp;thing&nbsp;-&gt;&nbsp;thing&nbsp;-&gt;&nbsp;thing</tt>.
+  </p>
+  <p>
+   <b>2.3. <i>Questy-equal.</i></b>
+  </p>
+  <p align="justify">
+   The Lisp function <tt>questy-equal</tt> tests if two Lisp objects
+   <tt>left</tt> and <tt>right</tt> are equal. However, whenever the
+   symbol <tt>?</tt> appears in <tt>left</tt>, it acts like a
+   &lsquo;&lsquo;wild card&rsquo;&rsquo; that is equal to anything.
+  </p>
+  <blockquote>
+   <p>
+    <tt>(define&nbsp;questy-equal&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;(&#955;&nbsp;(left&nbsp;right)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;(or&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(=&nbsp;left&nbsp;(quote&nbsp;?))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(and&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(is-cons&nbsp;left)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(is-cons&nbsp;right)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(questy-equal&nbsp;(car&nbsp;left)&nbsp;(car&nbsp;right))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(questy-equal&nbsp;(cdr&nbsp;left)&nbsp;(cdr&nbsp;right)))&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(=&nbsp;left&nbsp;right))))</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here are some examples of <tt>questy-equal</tt>.
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <table cellpadding="0" cellspacing="0">
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote 1) (quote 1))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote A) (quote 1))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>nil</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote A) (quote A))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote ?) (quote X))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote (A B C)) (quote (A X Y)))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>nil</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote (A ? ?)) (quote (A X Y)))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote (A (B 1) (C 2 3))) (quote (A (B 1) (C 2
+         3))))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p align="right">
+         <tt>(questy-equal (quote (A ? (C 2 ?))) (quote (A (B 1) (C 2
+         3))))</tt>
+        </p>
+       </td>
+       <td>
+        <p align="center">
+         &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <tt>t</tt>
+        </p>
+       </td>
+      </tr>
+     </table>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   Your OCaml function <tt>questyEqual</tt> must have the type
+   <tt>thing&nbsp;-&gt;&nbsp;thing&nbsp;-&gt;&nbsp;bool</tt>. Again, it
+   returns an OCaml Boolean, not a Lisp Boolean.
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests9.ml">
+    <tt>tests9.ml</tt>
+   </a>
+   contains some tests, worth <b>40 points.</b> Run the tests on your code
+   for this lab and submit your work by <b>11:55
+   <small>PM</small></b> on <b>Tuesday, April 7, 2026</b>. It must
+   be submitted on a file called <tt>lab9.ml</tt>. If you don&rsquo;t know
+   how or where to submit your work, then please ask your lab TA&rsquo;s.
+  </p>
+ </body>
+</html>
