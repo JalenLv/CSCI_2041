@@ -1,0 +1,456 @@
+<!-- Created by Bracy 0.4 on Monday, April 13, 2026 at 2:42 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 2041 Computer Laboratory 11
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 11</b>
+   <br />
+   <b>CS<small>CI</small> 2041: Advanced Programming Principles</b>
+   <br />
+   <b>Tuesday, April 14, 2026</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   In the past few lectures, we&rsquo;ve discussed how to implement a Lisp
+   evaluator in OCaml. For this laboratory assignment, you will modify the Lisp
+   evaluator so it can evaluate three kinds of expressions that it could not
+   evaluate before. Among other things, this gives you some practice reading
+   and modifying code that you didn&rsquo;t write yourself&#8212;as you might
+   need to do in the Real World.
+  </p>
+  <p>
+   <b>1. Implementation.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests11.ml">
+    <tt>tests11.ml</tt>
+   </a>
+   contains OCaml source code for a Lisp evaluator like the one discussed in
+   the lectures. You must modify the evaluator so it can evaluate three new
+   primitive functions: <tt>atom</tt>, <tt>imply</tt>, and
+   <tt>let</tt>. You must do it by adding three new calls to the OCaml
+   function <tt>primitive</tt>. The new primitives are described as
+   follows, where the arrow &lsquo;&#8658;&rsquo; means <i>returns.</i>
+  </p>
+  <p align="justify">
+   <b>Atom</b>. In Lisp, an <i>atom</i> is an object that can&rsquo;t
+   be split into smaller parts. (Scientists once believed that about real
+   atoms, too.) The subset of Lisp discussed in the lectures has five kinds of
+   atoms: closures, <tt>nil</tt>&rsquo;s, numbers, primitives, and
+   symbols.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The function <tt>is-atom</tt> takes one
+   argument. It returns the symbol <tt>t</tt> (true) if its argument
+   evaluates to an atom, and <tt>nil</tt> (false) otherwise. Here are some
+   examples of how <tt>is-atom</tt> must work.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom nil)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom (quote a))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom (quote (a b c)))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>nil</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom 7734)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom is-atom)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(is-atom (+ 2 2))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   If <tt>is-atom</tt> is called with no arguments, or with more than one
+   argument, then it must raise the exception <tt>EvaluatorError</tt> with
+   a descriptive string as an error message. Modify the Lisp evaluator so it
+   can evaluate calls to <tt>is-atom</tt>.
+  </p>
+  <p align="justify">
+   <b>Imply</b>. In propositional logic, &#945;&nbsp;&#8594;&nbsp;&#946;
+   is called an <i>implication,</i> and is read as
+   &lsquo;&lsquo;<i>alpha</i> implies <i>beta.</i>&rsquo;&rsquo;
+   It&rsquo;s an abbreviation for (&#172; &#945;)&nbsp;&#8744;&nbsp;&#946;. If
+   &#945; is <i>false,</i> then &#945;&nbsp;&#8594;&nbsp;&#946; is
+   <i>true.</i> If &#946; is <i>true,</i> then
+   &#945;&nbsp;&#8594;&nbsp;&#946; is <i>true.</i> Otherwise
+   &#945;&nbsp;&#8594;&nbsp;&#946; is <i>false.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Lisp function
+   <tt>(imply&nbsp;</tt><i>e</i>&#8321;<tt>&nbsp;</tt><i>e</i>&#8322;<tt>&nbsp;</tt>&#8943;<tt>&nbsp;</tt><i>e&#8345;</i><tt>)</tt>
+   acts like a series of one or more implications
+   <i>e</i>&#8321;&nbsp;&#8594;&nbsp;<i>e</i>&#8322;&nbsp;&#8943;&nbsp;&#8594;&nbsp;<i>e&#8345;.</i>
+   It&rsquo;s like an <tt>or</tt>, where all arguments but the last are
+   inside <tt>not</tt>&rsquo;s:
+   <tt>(or</tt>&nbsp;<tt>(not</tt>&nbsp;<i>e</i>&#8321;<tt>)</tt>&nbsp;<tt>(not</tt>&nbsp;<i>e</i>&#8322;<tt>)</tt>&nbsp;&#8943;&nbsp;<i>e&#8345;</i><tt>)</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The function <tt>imply</tt> evaluates
+   its <i>n</i> arguments <i>e</i>&#8321;, <i>e</i>&#8322;
+   &#8943;, <i>e&#8345;</i> one at a time, from left to right. If one of
+   the first <i>n</i>&#8722;1 arguments evaluates to <tt>nil</tt>,
+   then <tt>imply</tt> stops immediately, and returns <tt>t</tt>
+   without evaluating the remaining arguments. Otherwise, it returns the result
+   of evaluating the <i>n</i>th argument. Here are some examples of how
+   <tt>imply</tt> must work.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply t)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply nil)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>nil</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply nil (/ 0 0))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply t nil (/ 0 0))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply t t t 100)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>100</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(imply (quote a) (quote b) (quote c) (quote z))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>z</tt>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   If <tt>imply</tt> is called with no arguments, then it must raise the
+   exception <tt>EvaluatorError</tt> with a descriptive string as an error
+   message. Modify the Lisp evaluator so it can evaluate calls to
+   <tt>imply</tt>.
+  </p>
+  <p align="justify">
+   <b>Let</b>. The Lisp function
+   <tt>(let&nbsp;</tt><i>s</i><tt>&nbsp;</tt><i>e</i>&#8321;<tt>&nbsp;</tt><i>e</i>&#8322;<tt>)</tt>
+   acts something like an OCaml <i>let</i>-expression. First,
+   <tt>let</tt> evaluates the expression <i>e</i>&#8321;. Next, it
+   binds the symbol <i>s</i> in the local environment to the result of
+   evaluating <i>e</i>&#8321;. Then it evaluates the expression
+   <i>e</i>&#8322;, which may contain at least one appearance of
+   <i>s</i>. Finally, <tt>let</tt> restores the current environment
+   to what it was before <i>s</i> was bound. Here are some examples of how
+   <tt>let</tt> must work.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(let n 1 n)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>1</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(let n 2 n)</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>2</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(let two 2 (+ two two))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>4</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(let two 2 (is-atom two))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>t</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="right">
+       <tt>(let a 1 (let b 2 (+ a b)))</tt>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;&#8658;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <tt>3</tt>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   If <tt>let</tt> is called with fewer than three arguments, or more than
+   three arguments, then it must raise the exception
+   <tt>EvaluatorError</tt>. If its first argument is not a symbol, then it
+   must also raise the exception <tt>EvaluatorError</tt>. In either case,
+   the exception must have a descriptive string as an error message. Modify the
+   Lisp evaluator so it can evaluate calls to <tt>let</tt>. Hint: use the
+   OCaml function <tt>envPut</tt> to create a new environment in which
+   <i>s</i> is bound, and and pass it to the OCaml function
+   <tt>evaluating</tt>.
+  </p>
+  <p>
+   <b>2. Deliverables.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="tests11.ml">
+    <tt>tests11.ml</tt>
+   </a>
+   contains a version of the Lisp evaluator, along with code that performs a
+   series of tests, worth <b>40</b> points. Modify the evaluator so that
+   it implements <tt>is-atom</tt>, <tt>imply</tt>, and
+   <tt>let</tt>, as described above. Submit the modified evaluator in a
+   file called <tt>lab10.ml</tt> by <b>11:55
+   <small>PM</small></b> on <b>April 21, 2026</b>. If you do not
+   know how or where to submit your work, then please ask your lab section
+   TA&rsquo;s.
+  </p>
+ </body>
+</html>
